@@ -24,7 +24,14 @@ public class MatchController : ControllerBase
     [HttpPut("{id}/result")]
     public async Task<IActionResult> SubmitResult(Guid id, [FromBody] SubmitResultCommand command)
     {
-        var result = await _mediator.Send(command with { MatchId = id });
+        command = new SubmitResultCommand 
+        { 
+            MatchId = id, 
+            WinnerId = command.WinnerId, 
+            Player1Score = command.Player1Score, 
+            Player2Score = command.Player2Score 
+        };
+        var result = await _mediator.Send(command);
         return result.IsSuccess ? Ok() : BadRequest(result.ErrorMessage);
     }
 
