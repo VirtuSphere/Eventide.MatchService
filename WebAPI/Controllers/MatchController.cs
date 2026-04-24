@@ -1,4 +1,5 @@
 using Eventide.MatchService.Application.Commands.CreateMatch;
+using Eventide.MatchService.Application.Commands.StartMatch;
 using Eventide.MatchService.Application.Commands.SubmitResult;
 using Eventide.MatchService.Application.Queries.GetMatch;
 using MediatR;
@@ -40,5 +41,11 @@ public class MatchController : ControllerBase
     {
         var result = await _mediator.Send(new GetMatchQuery { MatchId = id });
         return result.IsSuccess ? Ok(result.Value) : NotFound(result.ErrorMessage);
+    }
+    [HttpPut("{id}/start")]
+    public async Task<IActionResult> StartMatch(Guid id)
+    {
+        var match = await _mediator.Send(new StartMatchCommand { MatchId = id });
+        return Ok();
     }
 }
