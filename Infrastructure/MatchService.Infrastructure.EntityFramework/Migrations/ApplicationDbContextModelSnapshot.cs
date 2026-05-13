@@ -38,6 +38,17 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
                     b.ToTable("Administrators", (string)null);
                 });
 
+            modelBuilder.Entity("MatchService.Domain.Bracket", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Brackets", (string)null);
+                });
+
             modelBuilder.Entity("MatchService.Domain.Match", b =>
                 {
                     b.Property<Guid>("Id")
@@ -96,13 +107,28 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
 
                     b.HasIndex("AdministratorId");
 
+                    b.HasIndex("BracketId");
+
                     b.HasIndex("Player1Id");
 
                     b.HasIndex("Player2Id");
 
+                    b.HasIndex("TournamentId");
+
                     b.HasIndex("WinnerId");
 
                     b.ToTable("Matches", (string)null);
+                });
+
+            modelBuilder.Entity("MatchService.Domain.Tournament", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tournaments", (string)null);
                 });
 
             modelBuilder.Entity("MatchService.Domain.User", b =>
@@ -129,6 +155,12 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("MatchService.Domain.Bracket", "Bracket")
+                        .WithMany()
+                        .HasForeignKey("BracketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("MatchService.Domain.User", "Player1")
                         .WithMany()
                         .HasForeignKey("Player1Id")
@@ -141,6 +173,12 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("MatchService.Domain.Tournament", "Tournament")
+                        .WithMany()
+                        .HasForeignKey("TournamentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("MatchService.Domain.User", "Winner")
                         .WithMany()
                         .HasForeignKey("WinnerId")
@@ -148,9 +186,13 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
 
                     b.Navigation("Administrator");
 
+                    b.Navigation("Bracket");
+
                     b.Navigation("Player1");
 
                     b.Navigation("Player2");
+
+                    b.Navigation("Tournament");
 
                     b.Navigation("Winner");
                 });

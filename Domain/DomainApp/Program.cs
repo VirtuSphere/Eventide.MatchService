@@ -10,7 +10,7 @@ public class Program
 		var administrator = new Administrator(Guid.NewGuid(), new Username("AdminUser"));
 		var playerOne = new User(Guid.NewGuid(), new Username("Player1"));
 		var playerTwo = new User(Guid.NewGuid(), new Username("Player2"));
-		var match = administrator.CreateMatch(Guid.NewGuid(), Guid.NewGuid(), playerOne, playerTwo);
+		var match = administrator.CreateMatch(new Tournament(Guid.NewGuid()), new Bracket(Guid.NewGuid()), playerOne, playerTwo);
 
 		PrintSection("1. Матч создан", match);
 

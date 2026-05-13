@@ -12,6 +12,7 @@ public class AdministratorConfiguration : IEntityTypeConfiguration<Administrator
     {
         builder.ToTable("Administrators");
         builder.HasKey(a => a.Id);
+        builder.Property(a => a.Id).IsRequired();
 
         builder.Property(a => a.Username)
             .IsRequired()
@@ -22,5 +23,8 @@ public class AdministratorConfiguration : IEntityTypeConfiguration<Administrator
             .WithOne(m => m.Administrator)
             .HasForeignKey("AdministratorId")
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Navigation(a => a.Matches)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

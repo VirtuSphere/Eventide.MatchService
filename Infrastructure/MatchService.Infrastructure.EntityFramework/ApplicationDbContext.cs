@@ -1,16 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using MatchService.Domain;
-using System.Collections.Generic;
-using System.Reflection.Emit;
 
 namespace MatchService.Infrastructure.EntityFramework;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-    public DbSet<User> Users { get; set; }
-    public DbSet<Administrator> Administrators { get; set; }
-    public DbSet<Match> Matchs { get; set; }
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Administrator> Administrators { get; set; } = null!;
+    public DbSet<Match> Matches { get; set; } = null!;
+    public DbSet<Tournament> Tournaments { get; set; } = null!;
+    public DbSet<Bracket> Brackets { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -20,6 +19,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
 

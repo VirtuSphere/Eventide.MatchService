@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MatchService.Infrastructure.EntityFramework.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitialInfrastructureFix : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,6 +21,28 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Administrators", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Brackets",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Brackets", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tournaments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tournaments", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,6 +88,18 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_Matches_Brackets_BracketId",
+                        column: x => x.BracketId,
+                        principalTable: "Brackets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Matches_Tournaments_TournamentId",
+                        column: x => x.TournamentId,
+                        principalTable: "Tournaments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Matches_Users_Player1Id",
                         column: x => x.Player1Id,
                         principalTable: "Users",
@@ -91,6 +125,11 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
                 column: "AdministratorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Matches_BracketId",
+                table: "Matches",
+                column: "BracketId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Matches_Player1Id",
                 table: "Matches",
                 column: "Player1Id");
@@ -99,6 +138,11 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
                 name: "IX_Matches_Player2Id",
                 table: "Matches",
                 column: "Player2Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_TournamentId",
+                table: "Matches",
+                column: "TournamentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Matches_WinnerId",
@@ -114,6 +158,12 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "Administrators");
+
+            migrationBuilder.DropTable(
+                name: "Brackets");
+
+            migrationBuilder.DropTable(
+                name: "Tournaments");
 
             migrationBuilder.DropTable(
                 name: "Users");

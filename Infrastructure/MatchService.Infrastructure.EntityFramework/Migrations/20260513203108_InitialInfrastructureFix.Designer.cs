@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MatchService.Infrastructure.EntityFramework.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260513080315_Init")]
-    partial class Init
+    [Migration("20260513203108_InitialInfrastructureFix")]
+    partial class InitialInfrastructureFix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,6 +39,17 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Administrators", (string)null);
+                });
+
+            modelBuilder.Entity("MatchService.Domain.Bracket", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Brackets", (string)null);
                 });
 
             modelBuilder.Entity("MatchService.Domain.Match", b =>
@@ -99,13 +110,28 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
 
                     b.HasIndex("AdministratorId");
 
+                    b.HasIndex("BracketId");
+
                     b.HasIndex("Player1Id");
 
                     b.HasIndex("Player2Id");
 
+                    b.HasIndex("TournamentId");
+
                     b.HasIndex("WinnerId");
 
                     b.ToTable("Matches", (string)null);
+                });
+
+            modelBuilder.Entity("MatchService.Domain.Tournament", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tournaments", (string)null);
                 });
 
             modelBuilder.Entity("MatchService.Domain.User", b =>
@@ -132,6 +158,12 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("MatchService.Domain.Bracket", "Bracket")
+                        .WithMany()
+                        .HasForeignKey("BracketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("MatchService.Domain.User", "Player1")
                         .WithMany()
                         .HasForeignKey("Player1Id")
@@ -144,6 +176,12 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("MatchService.Domain.Tournament", "Tournament")
+                        .WithMany()
+                        .HasForeignKey("TournamentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("MatchService.Domain.User", "Winner")
                         .WithMany()
                         .HasForeignKey("WinnerId")
@@ -151,9 +189,13 @@ namespace MatchService.Infrastructure.EntityFramework.Migrations
 
                     b.Navigation("Administrator");
 
+                    b.Navigation("Bracket");
+
                     b.Navigation("Player1");
 
                     b.Navigation("Player2");
+
+                    b.Navigation("Tournament");
 
                     b.Navigation("Winner");
                 });
