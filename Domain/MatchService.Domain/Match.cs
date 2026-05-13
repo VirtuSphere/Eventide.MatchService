@@ -7,8 +7,8 @@ namespace MatchService.Domain;
 
 public class Match : Entity<Guid>
 {
-    public Guid TournamentId { get; private set; }
-    public Guid BracketId { get; private set; }
+    public Tournament Tournament { get; private set; } = null!;
+    public Bracket Bracket { get; private set; } = null!;
     public Administrator Administrator { get; private set; } = null!;
     public User Player1 { get; private set; } = null!;
     public User Player2 { get; private set; } = null!;
@@ -26,15 +26,10 @@ public class Match : Entity<Guid>
     protected Match()
     {
     }
-
-    public Match(Guid tournamentId, Guid bracketId, Administrator administrator, User player1, User player2)
-        : this(Guid.NewGuid(), tournamentId, bracketId, administrator, player1, player2, DateTime.UtcNow)
-    {}
-
     protected Match(
         Guid id,
-        Guid tournamentId,
-        Guid bracketId,
+        Tournament tournament,
+        Bracket bracket,
         Administrator administrator,
         User player1,
         User player2,
@@ -48,89 +43,87 @@ public class Match : Entity<Guid>
         {
             throw new MatchPlayerSameException();
         }
-        TournamentId = tournamentId;
-        BracketId = bracketId;
+        Tournament = tournament ?? throw new ArgumentNullValueException(nameof(tournament));
+        Bracket = bracket ?? throw new ArgumentNullValueException(nameof(bracket));
         Administrator = administrator;
         Player1 = player1;
         Player2 = player2;
         Status = MatchStatus.Scheduled;
         CreatedAt = createdAt;
     }
-    /// <summary>
-    /// Позволяет администратору установить победителя матча.
-    /// </summary>
-    /// <param name="winner"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullValueException"></exception>
-    /// <exception cref="MatchNotInProgressException"></exception>
-    /// <exception cref="MatchWinnerNotParticipantException"></exception>
-    public bool SetWinner(User winner)
+    public Match(Tournament tournament, Bracket bracket, Administrator administrator, User player1, User player2)
+        : this(Guid.NewGuid(), tournament, bracket, administrator, player1, player2, DateTime.UtcNow)
+    {}
+
+    public bool Edit(User? winner = null, DateTime? scheduledTime = null, MapName? mapName = null, ServerInfo? serverInfo = null)
     {
-        winner = winner ?? throw new ArgumentNullValueException(nameof(winner));
+        var isChanged = false;
 
-        if (Status != MatchStatus.InProgress)
+        if (winner != null)
         {
-            throw new MatchNotInProgressException(Status);
+            if (Status != MatchStatus.InProgress)
+            {
+                throw new MatchNotInProgressException(Status);
+            }
+
+            if (winner != Player1 && winner != Player2)
+            {
+                throw new MatchWinnerNotParticipantException(winner, Player1, Player2);
+            }
+
+            if (Winner == null || Winner.Id != winner.Id)
+            {
+                Winner = winner;
+                isChanged = true;
+            }
         }
 
-        if (winner != Player1 && winner != Player2)
+        if (scheduledTime != null)
         {
-            throw new MatchWinnerNotParticipantException(winner, Player1, Player2);
+            if (Status != MatchStatus.Scheduled)
+            {
+                throw new MatchNotScheduledException(Status);
+            }
+
+            if (ScheduledTime != scheduledTime)
+            {
+                ScheduledTime = scheduledTime;
+                isChanged = true;
+            }
         }
 
-        if (Winner != null && Winner.Id == winner.Id)
+        if (mapName != null)
         {
-            return false;
+            if (Status != MatchStatus.InProgress)
+            {
+                throw new MatchNotInProgressException(Status);
+            }
+
+            if (MapName == null || MapName.Value != mapName.Value)
+            {
+                MapName = mapName;
+                isChanged = true;
+            }
         }
-        Winner = winner;
-        return true;
+
+        if (serverInfo != null)
+        {
+            if (Status != MatchStatus.InProgress)
+            {
+                throw new MatchNotInProgressException(Status);
+            }
+
+            if (ServerInfo == null || !ServerInfo.Equals(serverInfo))
+            {
+                ServerInfo = serverInfo;
+                isChanged = true;
+            }
+        }
+
+        return isChanged;
     }
-    /// <summary>
-    /// Позволяет администратору установить карту для матча.
-    /// </summary>
-    /// <param name="mapName"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullValueException"></exception>
-    /// <exception cref="MatchNotInProgressException"></exception>
-    public bool SetMap(MapName mapName)
-    {
-        mapName = mapName ?? throw new ArgumentNullValueException(nameof(mapName));
 
-        if (Status != MatchStatus.InProgress)
-        {
-            throw new MatchNotInProgressException(Status);
-        }
-
-        if (MapName != null && MapName.Value == mapName.Value)
-        {
-            return false;
-        }
-        MapName = mapName;
-        return true;
-    }
-    /// <summary>
-    /// Позволяет администратору установить информацию о сервере для матча.
-    /// </summary>
-    /// <param name="serverInfo"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullValueException"></exception>
-    /// <exception cref="MatchNotInProgressException"></exception>
-    public bool SetServerInfo(ServerInfo serverInfo)
-    {
-        serverInfo = serverInfo ?? throw new ArgumentNullValueException(nameof(serverInfo));
-
-        if (Status != MatchStatus.InProgress)
-        {
-            throw new MatchNotInProgressException(Status);
-        }
-
-        if (ServerInfo != null && ServerInfo.Equals(serverInfo))
-        {
-            return false;
-        }
-        ServerInfo = serverInfo;
-        return true;
-    }
+    
     /// <summary>
     /// Позволяет администратору запланировать время начала матча.
     /// </summary>
@@ -260,5 +253,5 @@ public class Match : Entity<Guid>
     }
 
     public override string ToString()
-        => $"Match: {Id}, TournamentId: {TournamentId}, BracketId: {BracketId}, Player1Id: {Player1.Id}, Player2Id: {Player2.Id}, WinnerId: {Winner?.Id}, Status: {Status}, ScheduledTime: {ScheduledTime}, StartedAt: {StartedAt}, CompletedAt: {CompletedAt}, MapName: {MapName}, ServerInfo: {ServerInfo}, Player1Score: {Player1Score}, Player2Score: {Player2Score}, CreatedAt: {CreatedAt}";
+        => $"Match: {Id}, Tournament: {Tournament}, Bracket: {Bracket}, Player1Id: {Player1.Id}, Player2Id: {Player2.Id}, WinnerId: {Winner?.Id}, Status: {Status}, ScheduledTime: {ScheduledTime}, StartedAt: {StartedAt}, CompletedAt: {CompletedAt}, MapName: {MapName}, ServerInfo: {ServerInfo}, Player1Score: {Player1Score}, Player2Score: {Player2Score}, CreatedAt: {CreatedAt}";
 }
