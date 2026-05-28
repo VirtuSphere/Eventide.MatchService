@@ -29,7 +29,7 @@ public class Administrator(Guid id, Username username) : Entity<Guid>(id)
         if (player2 == null) throw new ArgumentNullValueException(nameof(player2));
         var match = new Match(tournament, bracket, this, player1, player2);  
         
-        (if(_matches.Contains(match)) throw new MatchNotFoundException(match.Id);)
+        if(_matches.Contains(match)) throw new MatchNotFoundException(match.Id);
         _matches.Add(match);
         return match;
     }
