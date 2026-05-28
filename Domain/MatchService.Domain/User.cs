@@ -34,7 +34,6 @@ public class User(Guid id, Username username) : Entity<Guid>(id)
     {
         if (match == null) throw new ArgumentNullValueException(nameof(match));
         if (match.Status != MatchStatus.Completed) throw new InvalidMatchStatusException(match.Id, match.Status);
-        match.Dispute(this);
-        return true;
+        return match.Dispute(this);
     }
 }

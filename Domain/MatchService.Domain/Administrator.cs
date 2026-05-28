@@ -29,7 +29,7 @@ public class Administrator(Guid id, Username username) : Entity<Guid>(id)
         if (player2 == null) throw new ArgumentNullValueException(nameof(player2));
         var match = new Match(tournament, bracket, this, player1, player2);  
         
-        if(_matches.Contains(match)) throw new MatchNotFoundException(match.Id);
+        (if(_matches.Contains(match)) throw new MatchNotFoundException(match.Id);)
         _matches.Add(match);
         return match;
     }
@@ -111,8 +111,7 @@ public class Administrator(Guid id, Username username) : Entity<Guid>(id)
         if (winner == null) throw new ArgumentNullValueException(nameof(winner));
         if (player1Score == null) throw new ArgumentNullValueException(nameof(player1Score));
         if (player2Score == null) throw new ArgumentNullValueException(nameof(player2Score));
-        match.SubmitResult(winner, player1Score, player2Score);
-        return true;
+        return match.SubmitResult(winner, player1Score, player2Score); ;
     }
 
 
