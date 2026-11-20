@@ -1,0 +1,61 @@
+name: Build and test
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      - name: Restore
+        run: dotnet restore Eventide.MatchService.sln
+
+      - name: Build
+        run: dotnet build Eventide.MatchService.sln --no-restore --configuration Release
+
+      - name: Test with coverage
+        run: >
+          dotnet test Tests/MatchService.Tests/MatchService.Tests.csproj
+          --no-build
+          --configuration Release
+          --settings Tests/MatchService.Tests/coverage.runsettings
+          --collect:"XPlat Code Coverage"
+
+      - name: Enforce 80 percent line coverage
+        shell: bash
+        run: |
+          coverage_file="$(find Tests/MatchService.Tests/TestResults -name coverage.cobertura.xml -print -quit)"
+          if [[ -z "$coverage_file" ]]; then
+            echo "Coverage report was not generated."
+            exit 1
+          fi
+
+          line_rate="$(grep -o 'line-rate="[^"]*"' "$coverage_file" | head -n 1 | cut -d'"' -f2)"
+          echo "Line coverage: ${line_rate}"
+          awk -v rate="$line_rate" 'BEGIN {
+            if (rate + 0 < 0.80) {
+              printf "Line coverage %.2f%% is below the required 80%%.\n", rate * 100
+              exit 1
+            }
+          }'
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: Tests/MatchService.Tests/TestResults/**/coverage.cobertura.xml

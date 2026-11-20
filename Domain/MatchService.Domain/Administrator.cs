@@ -12,7 +12,8 @@ public class Administrator(Guid id, Username username) : Entity<Guid>(id)
     private readonly ICollection<Match> _matches = [];
 
     public IReadOnlyCollection<Match> Matches => _matches.ToList().AsReadOnly();
-    internal bool ChangeUsername(Username newUsername)
+
+    public bool ChangeUsername(Username newUsername)
     {
         if (newUsername == null) throw new ArgumentNullValueException(nameof(newUsername));
 
@@ -21,6 +22,7 @@ public class Administrator(Guid id, Username username) : Entity<Guid>(id)
         Username = newUsername;
         return true;
     }
+
     public Match CreateMatch(Tournament tournament, Bracket bracket, User player1, User player2)
     {
         if (tournament == null) throw new ArgumentNullValueException(nameof(tournament));
@@ -51,6 +53,8 @@ public class Administrator(Guid id, Username username) : Entity<Guid>(id)
         if (!_matches.Contains(match)) throw new MatchNotFoundException(match.Id);
         return match.Schedule(newTime);
     }
+
+
     /// <summary>
     /// отмена матча может быть выполнена только если матч не начался, то есть его статус должен быть Scheduled. 
     /// После отмены статус матча меняется на Canceled
@@ -111,8 +115,8 @@ public class Administrator(Guid id, Username username) : Entity<Guid>(id)
         if (winner == null) throw new ArgumentNullValueException(nameof(winner));
         if (player1Score == null) throw new ArgumentNullValueException(nameof(player1Score));
         if (player2Score == null) throw new ArgumentNullValueException(nameof(player2Score));
-        match.SubmitResult(winner, player1Score, player2Score);
-        return true;
+        
+        return match.SubmitResult(winner, player1Score, player2Score);
     }
 
 

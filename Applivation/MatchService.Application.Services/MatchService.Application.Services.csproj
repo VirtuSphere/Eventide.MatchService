@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+   <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="14.0.0" />
+	</ItemGroup>
+    <ItemGroup>
+		<ProjectReference Include="..\MatchService.Application.Models\MatchService.Application.Models.csproj" />
+		<ProjectReference Include="..\..\Domain\MatchService.Domain\MatchService.Domain.csproj" />
+		<ProjectReference Include="..\..\Domain\MatchService.Domain.Repositories.Abstractions\MatchService.Domain.Repositories.Abstractions.csproj" />
+	</ItemGroup>
+</Project>

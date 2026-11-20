@@ -1,6 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using MatchService.Application.Services;
+using MatchService.Application.Services.Abstractions;
+using MatchService.Application.Services.Mapping;
+using MatchService.Domain.Repositories.Abstractions.Repositories;
 using MatchService.Infrastructure.EntityFramework;
+using MatchService.Infrastructure.EntityFramework.RepositoryEF;
 using MatchService.WebHost.Heplers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,16 +24,9 @@ builder.Services.AddNpgsql<ApplicationDbContext>(connectionString, options =>
 
 });
 
-builder.Services.AddSwaggerGen(
-    c =>
-    {
-        c.SwaggerDoc("v1", new OpenApiInfo
-        {
-            Version = "v1",
-            Title = "Match service API",
-            Description = "API for creating, viewing, storing, modifying, and deleting matches."
-        });
-    });
+builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
+builder.Services.AddScoped<IAdministratorApplicationService, AdministratorApplicationService>();
+builder.Services.AddScoped<IAdministratorRepository, EfAdministratorRepository>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(
     options =>
@@ -39,7 +37,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Match service API",
+        Description = "API for managing match administrators."
+    });
+});
 
 
 var app = builder.Build();

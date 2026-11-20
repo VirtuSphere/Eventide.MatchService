@@ -2,6 +2,7 @@
 using MatchService.Domain;
 using MatchService.Domain.Repositories.Abstractions.Repositories;
 using MatchService.Infrastructure.EntityFramework;
+using MatchService.ValueObjects;
 
 namespace MatchService.Infrastructure.EntityFramework.RepositoryEF;
 
@@ -14,7 +15,7 @@ public class EfAdministratorRepository(ApplicationDbContext context)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(username, nameof(username));
         return await _administrators
-            .FirstOrDefaultAsync(a => a.Username.Value == username, cancellationToken);
+            .FirstOrDefaultAsync(a => a.Username == new Username(username), cancellationToken);
     }
 
     public async Task<Administrator?> GetAdministratorByMatchIdAsync(Guid matchId, CancellationToken cancellationToken)

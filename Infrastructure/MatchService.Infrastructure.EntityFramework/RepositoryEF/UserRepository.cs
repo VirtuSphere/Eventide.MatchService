@@ -2,6 +2,7 @@
 using MatchService.Domain.Repositories.Abstractions.Repositories;
 using MatchService.Infrastructure.EntityFramework;
 using Microsoft.EntityFrameworkCore;
+using MatchService.ValueObjects;
 
 namespace MatchService.Infrastructure.EntityFramework.RepositoryEF;
 
@@ -15,6 +16,6 @@ public class EfUserRepository(ApplicationDbContext context)
         ArgumentException.ThrowIfNullOrWhiteSpace(username, nameof(username));
         
         return await _users
-            .FirstOrDefaultAsync(u => u.Username.Value == username, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Username == new Username(username), cancellationToken);
     }
 }

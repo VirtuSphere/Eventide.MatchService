@@ -1,6 +1,29 @@
-@MatchService.WebHost_HostAddress = http://localhost:5117
+@baseUrl = http://localhost:5117
 
-GET {{MatchService.WebHost_HostAddress}}/weatherforecast/
-Accept: application/json
+### Get all administrators
+GET {{baseUrl}}/api/administrators
 
-###
+### Get administrator by ID
+GET {{baseUrl}}/api/administrators/766e6294-7dfb-42ea-91c5-15ac7ac46a4b
+
+### Get administrator by username
+GET {{baseUrl}}/api/administrators/by-username/AdminUser
+
+### Create administrator
+POST {{baseUrl}}/api/administrators
+Content-Type: application/json
+
+{
+  "username": "AdminUser"
+}
+
+### Update administrator
+PUT {{baseUrl}}/api/administrators/766e6294-7dfb-42ea-91c5-15ac7ac46a4b
+Content-Type: application/json
+
+{
+  "username": "UpdatedAdmin"
+}
+
+### Delete administrator
+DELETE {{baseUrl}}/api/administrators/766e6294-7dfb-42ea-91c5-15ac7ac46a4b

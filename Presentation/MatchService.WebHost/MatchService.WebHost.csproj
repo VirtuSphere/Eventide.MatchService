@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Applivation\MatchService.Application.Services\MatchService.Application.Services.csproj" />
     <ProjectReference Include="..\..\Infrastructure\MatchService.Infrastructure.EntityFramework\MatchService.Infrastructure.EntityFramework.csproj" />
   </ItemGroup>
 
