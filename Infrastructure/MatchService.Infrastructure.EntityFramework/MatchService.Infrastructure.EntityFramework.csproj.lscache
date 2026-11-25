@@ -68,6 +68,8 @@ Configurations/
 Migrations/
  20260513203108_InitialInfrastructureFix.cs
  20260513203108_InitialInfrastructureFix.Designer.cs
+ 20261125232109_tes.cs
+ 20261125232109_tes.Designer.cs
  ApplicationDbContextModelSnapshot.cs
 obj/Debug/net8.0/
  .NETCoreApp,Version=v8.0.AssemblyAttributes.cs
@@ -75,7 +77,10 @@ obj/Debug/net8.0/
  MatchService.Infrastructure.EntityFramework.GlobalUsings.g.cs
 RepositoryEF/
  AdministratorRepository.cs
+ BracketRepository.cs
  EFRepository.cs
+ MatchRepository.cs
+ TournamentRepository.cs
  UserRepository.cs
 ApplicationDbContext.cs
 

@@ -36,7 +36,7 @@ jobs:
           --settings Tests/MatchService.Tests/coverage.runsettings
           --collect:"XPlat Code Coverage"
 
-      - name: Enforce 80 percent line coverage
+      - name: Enforce 95 percent line coverage
         shell: bash
         run: |
           coverage_file="$(find Tests/MatchService.Tests/TestResults -name coverage.cobertura.xml -print -quit)"
@@ -48,8 +48,8 @@ jobs:
           line_rate="$(grep -o 'line-rate="[^"]*"' "$coverage_file" | head -n 1 | cut -d'"' -f2)"
           echo "Line coverage: ${line_rate}"
           awk -v rate="$line_rate" 'BEGIN {
-            if (rate + 0 < 0.80) {
-              printf "Line coverage %.2f%% is below the required 80%%.\n", rate * 100
+            if (rate + 0 < 0.95) {
+              printf "Line coverage %.2f%% is below the required 95%%.\n", rate * 100
               exit 1
             }
           }'

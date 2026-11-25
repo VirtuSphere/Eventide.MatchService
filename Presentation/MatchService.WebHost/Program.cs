@@ -26,7 +26,13 @@ builder.Services.AddNpgsql<ApplicationDbContext>(connectionString, options =>
 
 builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 builder.Services.AddScoped<IAdministratorApplicationService, AdministratorApplicationService>();
+builder.Services.AddScoped<IUserApplicationService, UserApplicationService>();
+builder.Services.AddScoped<IMatchApplicationService, MatchApplicationService>();
 builder.Services.AddScoped<IAdministratorRepository, EfAdministratorRepository>();
+builder.Services.AddScoped<IUserRepository, EfUserRepository>();
+builder.Services.AddScoped<IMatchRepository, EfMatchRepository>();
+builder.Services.AddScoped<ITournamentRepository, EfTournamentRepository>();
+builder.Services.AddScoped<IBracketRepository, EfBracketRepository>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(
     options =>
@@ -34,7 +40,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(
         options.UseNpgsql(connectionString);
     });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

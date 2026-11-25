@@ -14,7 +14,7 @@ public class User(Guid id, Username username) : Entity<Guid>(id)
     /// <param name="newUsername"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullValueException"></exception>
-    internal bool ChangeUsername(Username newUsername)
+    public bool ChangeUsername(Username newUsername)
     {
         if (newUsername == null) throw new ArgumentNullValueException(nameof(newUsername));
 

@@ -2,7 +2,10 @@ using MatchService.Application.Models.Base;
 
 namespace MatchService.Application.Models.Match;
 
-public record class CreateMatchModel(
+/// <summary>
+/// Payload for creating a match.
+/// </summary>
+public sealed record CreateMatchModel(
     Guid TournamentId,
     Guid BracketId,
     Guid AdministratorId,

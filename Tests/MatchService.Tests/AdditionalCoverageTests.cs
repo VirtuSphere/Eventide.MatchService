@@ -1,6 +1,7 @@
 using AutoMapper;
 using MatchService.Application.Models.Administrator;
 using MatchService.Application.Services.Mapping;
+using MatchService.Domain;
 using MatchService.Domain.Enums;
 using MatchService.Domain.Exceptions;
 using MatchService.Infrastructure.EntityFramework;
@@ -90,6 +91,57 @@ public sealed class AdditionalDomainCoverageTests
         Assert.Equal(match.Player1.Id, result.Player1Id);
         Assert.Null(result.WinnerId);
         Assert.Null(result.MapName);
+    }
+
+    [Fact]
+    public void Match_EditAndDisputeCoverIdempotentAndNullBranches()
+    {
+        var match = TestData.Match();
+        var player1 = match.Player1;
+
+        Assert.False(match.Edit());
+        Assert.Throws<ArgumentNullValueException>(() =>
+            match.Start(null!, new MapName("Ancient")));
+        Assert.Throws<ArgumentNullValueException>(() =>
+            match.Start(new ServerInfo("server"), null!));
+
+        Assert.True(match.Start(new ServerInfo("server"), new MapName("Ancient")));
+        Assert.False(match.Edit(mapName: new MapName("Ancient")));
+        Assert.False(match.Edit(serverInfo: new ServerInfo("server")));
+        Assert.True(match.Edit(winner: player1));
+        Assert.False(match.Edit(winner: player1));
+
+        Assert.True(match.SubmitResult(player1, new PlayerScore(1), new PlayerScore(0)));
+        Assert.True(match.Dispute(player1));
+        Assert.False(match.Dispute(player1));
+        Assert.Contains("Match:", match.ToString());
+    }
+
+    [Fact]
+    public void Match_SubmitResultRejectsNullArguments()
+    {
+        var match = TestData.Match();
+        match.Start(new ServerInfo("server"), new MapName("Ancient"));
+
+        Assert.Throws<ArgumentNullValueException>(() =>
+            match.SubmitResult(null!, new PlayerScore(1), new PlayerScore(0)));
+        Assert.Throws<ArgumentNullValueException>(() =>
+            match.SubmitResult(match.Player1, null!, new PlayerScore(0)));
+        Assert.Throws<ArgumentNullValueException>(() =>
+            match.SubmitResult(match.Player1, new PlayerScore(1), null!));
+    }
+
+    [Fact]
+    public void DomainExceptionsExposeMessages()
+    {
+        var exception = new InvalidMatchWinnerException(
+            Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            "Winner",
+            "Actual");
+
+        Assert.Contains("11111111-1111-1111-1111-111111111111", exception.Message);
+        Assert.Contains("Winner", exception.Message);
+        Assert.Contains("Actual", exception.Message);
     }
 }
 

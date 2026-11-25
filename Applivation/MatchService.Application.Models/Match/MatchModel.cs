@@ -3,6 +3,9 @@ using MatchService.Domain.Enums;
 
 namespace MatchService.Application.Models.Match;
 
+/// <summary>
+/// Represents a match returned by the API.
+/// </summary>
 public sealed record MatchModel(
     Guid Id,
     Guid TournamentId,

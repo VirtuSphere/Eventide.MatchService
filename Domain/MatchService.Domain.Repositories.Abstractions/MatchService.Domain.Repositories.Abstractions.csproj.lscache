@@ -66,6 +66,9 @@ obj/Debug/net8.0/
  MatchService.Domain.Repositories.Abstractions.GlobalUsings.g.cs
 Repositories/
  IAdministratorRepository.cs
+ IBracketRepository.cs
+ IMatchRepository.cs
+ ITournamentRepository.cs
  IUserRepository.cs
 
 [frameworkPacks]

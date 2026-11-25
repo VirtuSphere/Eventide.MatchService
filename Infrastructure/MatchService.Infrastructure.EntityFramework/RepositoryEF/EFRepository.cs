@@ -10,7 +10,7 @@ public class EfRepository<TEntity, TId>(ApplicationDbContext context)
         where TEntity : Entity<TId>
         where TId : struct, IEquatable<TId>
 {
-    public async Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
         => await context.Set<TEntity>().ToListAsync(cancellationToken);
 
     public virtual async Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken = default)

@@ -1,4 +1,5 @@
 using MatchService.ValueObjects;
+using MatchService.ValueObjects.Base;
 using MatchService.ValueObjects.Exceptions;
 using Xunit;
 
@@ -54,5 +55,45 @@ public sealed class ValueObjectTests
         Assert.Equal(new Username("Player"), new Username("Player"));
         Assert.NotEqual(new Username("Player"), new Username("Other"));
         Assert.Equal("Player", new Username("Player").ToString());
+    }
+
+    [Fact]
+    public void ValueObject_RejectsNullValidator()
+    {
+        Assert.Throws<ValidatorNullException>(() =>
+            new TestValueObject(null!, "value"));
+    }
+
+    [Fact]
+    public void ValueObject_EqualityAndOperatorsCoverAllBranches()
+    {
+        var first = new TestValueObject(new TestValidator(), "value");
+        var sameReference = first;
+        var equal = new TestValueObject(new TestValidator(), "value");
+        var different = new TestValueObject(new TestValidator(), "other");
+
+        Assert.True(first.Equals((object?)equal));
+        Assert.False(first.Equals((object?)null));
+        Assert.False(first.Equals((object?)"value"));
+        Assert.True(first.Equals(sameReference));
+        Assert.False(first.Equals(different));
+        Assert.Equal(first.GetHashCode(), equal.GetHashCode());
+        Assert.Equal("value", first.ToString());
+        Assert.True(first == equal);
+        Assert.True(first != different);
+        Assert.True(TestValueObject.Empty == null);
+    }
+
+    private sealed class TestValueObject(IValidator<string> validator, string value)
+        : ValueObject<string>(validator, value)
+    {
+        public static TestValueObject? Empty => null;
+    }
+
+    private sealed class TestValidator : IValidator<string>
+    {
+        public void Validate(string value)
+        {
+        }
     }
 }
